@@ -108,7 +108,7 @@ const loginUser = asyncHandler( async (req,res) => {
 
     const {username,email,password} = req.body
 
-    if(!username || !email){
+    if(!(username || email)){
         throw new ApiError(400,"username or email required");
     }
 
@@ -128,6 +128,10 @@ const loginUser = asyncHandler( async (req,res) => {
 
     const {accessToken,refreshToken} = await generateAccessTokenAndRefreshToken(user._id)
 
+    // console.log(accessToken);
+    // console.log(refreshToken);
+    
+
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
     const options = {
@@ -137,8 +141,8 @@ const loginUser = asyncHandler( async (req,res) => {
 
     return res
     .status(200)
-    .cookies("accessToken", accessToken, options)
-    .cookies("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
     .json(
         new ApiResponse(
             200,
